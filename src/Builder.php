@@ -18,6 +18,7 @@ abstract class Builder implements IQuery
     private $_group   = false;
     private $_orderBy = false;
     private $_relate  = false;
+    private $_fetchSql= false;
 
     public function relate($relate)
     {
@@ -92,7 +93,10 @@ abstract class Builder implements IQuery
 
         $sql = Parser::select($this->getTableName(), $this->_alias, $this->_field, $this->_condition, $this->_offset, $this->_limit, $this->_orderBy, $this->_group, $this->_having, $this->_relate);
 
-        var_dump($sql);
+        if ($this->_fetchSql){
+            return [$sql, $this->_bindParams];
+        }
+
         $stmt = (new DB())->connection()->prepare($sql);
 
         if (!empty($this->_bindParams)){
@@ -110,6 +114,10 @@ abstract class Builder implements IQuery
     public function get()
     {
         $sql = Parser::select($this->getTableName(), $this->_alias, $this->_field, $this->_condition, false, false, $this->_orderBy, $this->_group, $this->_having, $this->_relate);
+
+        if ($this->_fetchSql){
+            return [$sql, $this->_bindParams];
+        }
 
         $stmt = (new DB())->connection()->prepare($sql);
 
@@ -129,6 +137,10 @@ abstract class Builder implements IQuery
 
         $sql = Parser::insert($this->getTableName(),$data);
 
+        if ($this->_fetchSql){
+            return [$sql, $this->_bindParams];
+        }
+
         $stmt = (new DB())->connection()->prepare($sql);
 
         if (!empty($this->_bindParams)){
@@ -144,6 +156,10 @@ abstract class Builder implements IQuery
     public function update($data)
     {
         $sql = Parser::update($this->getTableName(),$this->_condition, $data);
+
+        if ($this->_fetchSql){
+            return [$sql, $this->_bindParams];
+        }
 
         $stmt = (new DB())->connection()->prepare($sql);
 
@@ -236,5 +252,9 @@ abstract class Builder implements IQuery
         return $this;
     }
 
+    public function fetchSql($fetchSql = true){
+        $this->_fetchSql = $fetchSql;
+        return $this;
+    }
 
 }

@@ -22,7 +22,7 @@ $res = test\Users::query()->alias('u')->field('u.*')
 
 
 
-$res = \test\Users::query()->getListForPage(
+$res = \test\Users::query()->fetchSql(false)->getListForPage(
     [
         ['u.id','=', 1]
     ],'c.*',[
