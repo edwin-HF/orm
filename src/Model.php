@@ -4,10 +4,6 @@
 namespace Edv\Orm;
 
 
-use Edv\Orm\traits\mysql\ObjectStrategy;
-use Edv\Orm\traits\mysql\StaticStrategy;
-use mysql_xdevapi\Statement;
-
 /**
  * Class Model
  * @package Edv\Orm
