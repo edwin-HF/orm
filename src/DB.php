@@ -3,11 +3,11 @@
 
 namespace Edv\Orm;
 
-
-abstract class DB extends Builder
+class DB extends Builder
 {
 
-    private \PDO $conn;
+    private static $connMap;
+    private \PDO $curConn;
 
     public function __construct()
     {
@@ -19,36 +19,48 @@ abstract class DB extends Builder
     }
 
     public function getConnection(){
-        return $this->conn;
+        return $this->curConn;
     }
 
-    public function connection($connection){
+    /**
+     * @param array $con
+     * @return \PDO
+     */
+    public function connection($con = []){
 
-        $dsn = sprintf('%s:host=%s;dbname=%s;port=%s;charset=%s',$connection['type'] ?? 'mysql', $connection['host'] ?? 'localhost', $connection['database'] ?? '', $connection['port'] ?? 3306, $connection['charset'] ?? 'utf8mb4');
-
-        static $pdo = null;
-
-        if (!$pdo){
-            $pdo = new \PDO($dsn, $connection['username'] ?? '', $connection['password']?? '', $connection['options'] ?? null);
+        try {
+            //$connection = array_merge(\config('database',[]), $con);
+        }catch (\Exception $exception){
+            $connection = [];
         }
 
-        return $pdo;
+        $defaultOptions = [
+            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+        ];
+
+        $dsn = sprintf('%s:host=%s;dbname=%s;port=%s;charset=%s',$connection['type'] ?? 'mysql', $connection['host'] ?? '127.0.0.1', $connection['database'] ?? 'test', $connection['port'] ?? 3306, $connection['charset'] ?? 'utf8mb4');
+
+        if (!isset(self::$connMap[$dsn]) || empty(self::$connMap[$dsn])){
+        }
+            $this->curConn = self::$connMap[$dsn] = new \PDO($dsn, $connection['username'] ?? 'root', $connection['password']?? 'root', array_merge($defaultOptions,$connection['options'] ?? []));
+
+        return $this->curConn;
 
     }
 
     public function startTransaction()
     {
-        return $this->conn->beginTransaction();
+        return $this->curConn->beginTransaction();
     }
 
     public function commit()
     {
-        return $this->conn->commit();
+        return $this->curConn->commit();
     }
 
     public function rollback()
     {
-        return $this->conn->rollBack();
+        return $this->curConn->rollBack();
     }
 
 }

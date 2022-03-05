@@ -39,16 +39,5 @@ interface IQuery
 
     public function forPage($page, $pageSize);
 
-    public function getInfo($condition , $field = '*' , $relate = [] , $sort = '' , $limit = 0 , $group = '' , $having = '');
-
-    public function getList();
-
-    public function getListForPage();
-
-    public function startTransaction();
-
-    public function commit();
-
-    public function rollback();
 
 }

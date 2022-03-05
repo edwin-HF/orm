@@ -17,10 +17,12 @@ abstract class Builder implements IQuery
     private $_having  = false;
     private $_group   = false;
     private $_orderBy = false;
+    private $_relate  = false;
 
     public function relate($relate)
     {
-        // TODO: Implement relate() method.
+        $this->_relate = $relate;
+        return $this;
     }
 
     public function table($table = ''){
@@ -38,27 +40,33 @@ abstract class Builder implements IQuery
     }
 
     /**
-     * @param $conditions
+     * @param string|array $conditions
      * @param string $op
      * @return $this
-     * ['name','=','zhangsan']
      */
     public function where($conditions, $op = 'AND')
     {
 
-        if ($this->_condition){
-            $this->_condition .= sprintf(' %s ( ', $op);
-        }else{
-            $this->_condition = ' WHERE ( ';
+        $cond = '';
+        if (!$this->_condition){
+            $cond = ' WHERE ( ';
         }
 
-        $index = 0;
-        foreach ($conditions as $condition){
-            $this->_condition .= sprintf('%s %s %s :%s ',($index++ == 0 ? '' : ' AND '), $condition[0], $condition[1], $condition[0]);
-            $this->_bindParams[':'.$condition[0]] = $condition[2];
+        if (is_string($conditions)){
+            $cond .= empty($this->_condition) ? sprintf(' %s ', $conditions)  : sprintf(' %s ( %s ) ', $op, $conditions);
+        }elseif(is_array($conditions)){
+            $cond .= empty($this->_condition) ? ' ' : sprintf(' %s ( ', $op);
+            $index = 0;
+            foreach ($conditions as $condition){
+                $bindField = str_replace('.','_',$condition[0]);
+                $cond .= sprintf('%s %s %s :%s ',($index++ == 0 ? '' : $condition[3] ?? ' AND '), $condition[0], $condition[1], $bindField);
+                $this->_bindParams[':'. $bindField] = $condition[2];
+            }
         }
 
-        $this->_condition .= ' ) ';
+        $cond .= ')';
+
+        $this->_condition = $this->_condition . $cond;
 
         return $this;
     }
@@ -69,44 +77,98 @@ abstract class Builder implements IQuery
         return $this;
     }
 
-    public function test(){
-        var_dump($this->table());
-        var_dump($this->condition);
-        var_dump($this->bindParams);
-        var_dump(static::class);
+    public function getTableName(){
+
+        if (!empty($this->_table))
+            return $this->_table;
+
+        $this->table();
+
+        return $this->_table;
     }
 
     public function select()
     {
 
-        if (empty($this->_table)){
-            $this->table();
+        $sql = Parser::select($this->getTableName(), $this->_alias, $this->_field, $this->_condition, $this->_offset, $this->_limit, $this->_orderBy, $this->_group, $this->_having, $this->_relate);
+
+        var_dump($sql);
+        $stmt = (new DB())->connection()->prepare($sql);
+
+        if (!empty($this->_bindParams)){
+            foreach ($this->_bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
         }
 
-        $sql = Parser::select($this->_table, $this->_alias, $this->_field, $this->_condition, $this->_offset, $this->_limit, $this->_orderBy, $this->_group, $this->_having);
-        var_dump($sql);
+        $stmt->execute();
 
-        // TODO: Implement select() method.
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
     }
 
     public function get()
     {
-        // TODO: Implement get() method.
+        $sql = Parser::select($this->getTableName(), $this->_alias, $this->_field, $this->_condition, false, false, $this->_orderBy, $this->_group, $this->_having, $this->_relate);
+
+        $stmt = (new DB())->connection()->prepare($sql);
+
+        if (!empty($this->_bindParams)){
+            foreach ($this->_bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
+        }
+
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function insert($data)
     {
-        // TODO: Implement insert() method.
+
+        $sql = Parser::insert($this->getTableName(),$data);
+
+        $stmt = (new DB())->connection()->prepare($sql);
+
+        if (!empty($this->_bindParams)){
+            foreach ($this->_bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
+        }
+
+        return $stmt->execute();
+
     }
 
     public function update($data)
     {
-        // TODO: Implement update() method.
+        $sql = Parser::update($this->getTableName(),$this->_condition, $data);
+
+        $stmt = (new DB())->connection()->prepare($sql);
+
+        if (!empty($this->_bindParams)){
+            foreach ($this->_bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
+        }
+
+        return $stmt->execute();
     }
 
     public function delete()
     {
-        // TODO: Implement delete() method.
+        $sql = Parser::delete($this->getTableName(), $this->_condition);
+
+        $stmt = (new DB())->connection()->prepare($sql);
+
+        if (!empty($this->_bindParams)){
+            foreach ($this->_bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
+        }
+
+        return $stmt->execute();
     }
 
     public function limit($limit)
@@ -145,9 +207,26 @@ abstract class Builder implements IQuery
         return $this;
     }
 
-    public function exec($sql)
+    /**
+     * @param $sql
+     * @param array $bindParams
+     * @return bool|\PDOStatement
+     */
+    public function exec($sql, $bindParams = [])
     {
-        // TODO: Implement exec() method.
+
+        $stmt = (new DB())->connection()->prepare($sql);
+
+        if (!empty($bindParams)){
+            foreach ($bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
+        }
+
+        $stmt->execute();
+
+        return $stmt;
+
     }
 
     public function forPage($page, $pageSize)
@@ -157,18 +236,5 @@ abstract class Builder implements IQuery
         return $this;
     }
 
-    public function getInfo($condition, $field = '*', $relate = [], $sort = '', $limit = 0, $group = '', $having = '')
-    {
-        // TODO: Implement getInfo() method.
-    }
 
-    public function getList()
-    {
-        // TODO: Implement getList() method.
-    }
-
-    public function getListForPage()
-    {
-        // TODO: Implement getListForPage() method.
-    }
 }
