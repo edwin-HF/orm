@@ -19,7 +19,12 @@ class DB extends Builder
     }
 
     public function config(){
-        throw new \Exception('config must be implement');
+
+        if (function_exists('config')){
+            return \config('database',[]);
+        }
+
+        return [];
     }
 
     /**
@@ -60,19 +65,19 @@ class DB extends Builder
 
     }
 
-    public function startTransaction()
+    public static function beginTransaction()
     {
-        return $this->curConn->beginTransaction();
+        return static::query()->getConnection()->beginTransaction();
     }
 
-    public function commit()
+    public static function commit()
     {
-        return $this->curConn->commit();
+        return static::query()->getConnection()->commit();
     }
 
-    public function rollback()
+    public static function rollBack()
     {
-        return $this->curConn->rollBack();
+        return static::query()->getConnection()->rollBack();
     }
 
 }

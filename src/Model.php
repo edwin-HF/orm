@@ -11,15 +11,6 @@ namespace Edv\Orm;
 class Model extends DB
 {
 
-    public function config(){
-
-        if (function_exists('config')){
-            return \config('database',[]);
-        }
-
-        return [];
-    }
-
     public function getInfo($condition = [], $field = '*', $relate = [], $sort = '', $group = '', $having = '')
     {
         $query = $this->field($field)->where($condition);
