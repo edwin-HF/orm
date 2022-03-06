@@ -9,40 +9,52 @@ class DB extends Builder
     private static $connMap;
     private \PDO $curConn;
 
-    public function __construct()
+    /**
+     * @param array $config
+     * @return \PDO
+     */
+    public function getConnection($config = []):\PDO
     {
-        //$this->conn = $this->connection($this->config());
+        return $this->connection($config);
     }
 
     public function config(){
-        throw new \Exception('please implement config method');
-    }
-
-    public function getConnection(){
-        return $this->curConn;
+        throw new \Exception('config must be implement');
     }
 
     /**
-     * @param array $con
+     * @return static
+     */
+    public static function query(){
+        return new static();
+    }
+
+    /**
+     * @param array $config
      * @return \PDO
      */
-    public function connection($con = []){
+    public function connection($config = []){
 
         try {
-            //$connection = array_merge(\config('database',[]), $con);
+            $connection = array_merge($this->config(), $config);
         }catch (\Exception $exception){
             $connection = [];
         }
 
         $defaultOptions = [
             \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
         ];
 
         $dsn = sprintf('%s:host=%s;dbname=%s;port=%s;charset=%s',$connection['type'] ?? 'mysql', $connection['host'] ?? '127.0.0.1', $connection['database'] ?? 'test', $connection['port'] ?? 3306, $connection['charset'] ?? 'utf8mb4');
 
         if (!isset(self::$connMap[$dsn]) || empty(self::$connMap[$dsn])){
-        }
             $this->curConn = self::$connMap[$dsn] = new \PDO($dsn, $connection['username'] ?? 'root', $connection['password']?? 'root', array_merge($defaultOptions,$connection['options'] ?? []));
+        }else{
+            $this->curConn = self::$connMap[$dsn];
+        }
+
+        $this->curConn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         return $this->curConn;
 

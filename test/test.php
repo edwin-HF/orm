@@ -7,30 +7,26 @@ $relate = [
     ['course as on cc.uid = bb.id','left']
 ];
 
-$res = test\Users::query()->alias('u')->field('u.*')
-    ->relate(
-        [
-            ['course c','u.id = c.user_id']
-        ]
-    )
-    ->where(
+//$res = test\Users::query()->alias('u')->field('u.*')
+//    ->relate(
+//        [
+//            ['course c','u.id = c.user_id']
+//        ]
+//    )
+//    ->where(
+//    [
+//        ['u.id','=','1'],
+//        ['u.name','like','%lisi%','OR'],
+//    ]
+//)->orderBy('id')->get();
+
+
+
+$res = \test\Users::query()->table('admin_users')
+    ->fetchSql(false)->getInfo(
     [
-        ['u.id','=','1'],
-        ['u.name','like','%lisi%','OR'],
+        ['id','=', 1]
     ]
-)->orderBy('id')->get();
-
-
-
-$res = \test\Users::query()->fetchSql(false)->getListForPage(
-    [
-        ['u.id','=', 1]
-    ],'c.*',[
-        'alias' => 'u',
-        'relate' => [
-            ['course c','u.id = c.user_id']
-        ]
-],'u.id desc',1,2
 );
 
 var_dump($res);

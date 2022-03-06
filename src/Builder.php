@@ -80,10 +80,11 @@ abstract class Builder implements IQuery
 
     public function getTableName(){
 
-        if (!empty($this->_table))
+        if (!empty($this->_table)){
             return $this->_table;
-
-        $this->table();
+        }else{
+            $this->table();
+        }
 
         return $this->_table;
     }
@@ -97,7 +98,7 @@ abstract class Builder implements IQuery
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = (new DB())->connection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -119,7 +120,7 @@ abstract class Builder implements IQuery
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = (new DB())->connection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -141,7 +142,7 @@ abstract class Builder implements IQuery
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = (new DB())->connection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -161,7 +162,7 @@ abstract class Builder implements IQuery
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = (new DB())->connection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -176,7 +177,7 @@ abstract class Builder implements IQuery
     {
         $sql = Parser::delete($this->getTableName(), $this->_condition);
 
-        $stmt = (new DB())->connection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -231,7 +232,7 @@ abstract class Builder implements IQuery
     public function exec($sql, $bindParams = [])
     {
 
-        $stmt = (new DB())->connection()->prepare($sql);
+        $stmt = $this->getConnection()->prepare($sql);
 
         if (!empty($bindParams)){
             foreach ($bindParams as $key => $val){
@@ -256,5 +257,7 @@ abstract class Builder implements IQuery
         $this->_fetchSql = $fetchSql;
         return $this;
     }
+
+    abstract public function getConnection($config = []) : \PDO;
 
 }

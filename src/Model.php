@@ -12,14 +12,12 @@ class Model extends DB
 {
 
     public function config(){
-        return [];
-    }
 
-    /**
-     * @return static
-     */
-    public static function query(){
-        return new static();
+        if (method_exists(null, 'config')){
+            return \config('database');
+        }
+
+        return [];
     }
 
     public function getInfo($condition, $field = '*', $relate = [], $sort = '', $group = '', $having = '')
