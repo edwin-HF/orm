@@ -219,6 +219,77 @@ abstract class Builder implements IQuery
         return $result['total_count'] ?? 0;
     }
 
+    public function max($field)
+    {
+        $sql = Parser::select($this->getTableName(), $this->_alias, sprintf('max(`%s`) as tp_v',$field), $this->_condition, false, false, false, $this->_group, $this->_having, $this->_relate);
+
+        if ($this->_fetchSql){
+            return [$sql, $this->_bindParams];
+        }
+
+        $stmt = $this->getConnection()->prepare($sql);
+
+        if (!empty($this->_bindParams)){
+            foreach ($this->_bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
+        }
+
+        $stmt->execute();
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $result['tp_v'] ?? 0;
+    }
+
+
+    public function min($field)
+    {
+        $sql = Parser::select($this->getTableName(), $this->_alias, sprintf('min(`%s`) as tp_v',$field), $this->_condition, false, false, false, $this->_group, $this->_having, $this->_relate);
+
+        if ($this->_fetchSql){
+            return [$sql, $this->_bindParams];
+        }
+
+        $stmt = $this->getConnection()->prepare($sql);
+
+        if (!empty($this->_bindParams)){
+            foreach ($this->_bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
+        }
+
+        $stmt->execute();
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $result['tp_v'] ?? 0;
+    }
+
+
+    public function value($field)
+    {
+        $sql = Parser::select($this->getTableName(), $this->_alias, $field, $this->_condition, false, false, $this->_orderBy, $this->_group, $this->_having, $this->_relate);
+
+        if ($this->_fetchSql){
+            return [$sql, $this->_bindParams];
+        }
+
+        $stmt = $this->getConnection()->prepare($sql);
+
+        if (!empty($this->_bindParams)){
+            foreach ($this->_bindParams as $key => $val){
+                $stmt->bindValue($key, $val);
+            }
+        }
+
+        $stmt->execute();
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $result[$field] ?? '';
+    }
+
     public function limit($limit)
     {
         $this->_limit = $limit;

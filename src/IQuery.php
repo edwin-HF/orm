@@ -37,6 +37,12 @@ interface IQuery
 
     public function count();
 
+    public function max($field);
+
+    public function min($field);
+
+    public function value($field);
+
     public function exec($sql);
 
     public function forPage($page, $pageSize);
