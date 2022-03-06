@@ -35,6 +35,8 @@ interface IQuery
 
     public function orderBy($order);
 
+    public function count();
+
     public function exec($sql);
 
     public function forPage($page, $pageSize);

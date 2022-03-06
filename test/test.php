@@ -22,12 +22,7 @@ $relate = [
 
 
 
-$res = \test\Users::query()
-    ->getInfo(
-        [
-            ['id','=', 1]
-        ]
-    );
+$res = \test\Users::query()->count();
 
 var_dump($res);
 
