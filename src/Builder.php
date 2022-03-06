@@ -185,6 +185,10 @@ abstract class Builder implements IQuery
     {
         $sql = Parser::delete($this->getTableName(), $this->_condition);
 
+        if ($this->_fetchSql){
+            return [$sql, $this->_bindParams];
+        }
+
         $stmt = $this->getConnection()->prepare($sql);
 
         if (!empty($this->_bindParams)){
