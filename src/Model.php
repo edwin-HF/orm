@@ -20,7 +20,7 @@ class Model extends DB
         return [];
     }
 
-    public function getInfo($condition, $field = '*', $relate = [], $sort = '', $group = '', $having = '')
+    public function getInfo($condition = [], $field = '*', $relate = [], $sort = '', $group = '', $having = '')
     {
         $query = $this->field($field)->where($condition);
 
@@ -41,7 +41,7 @@ class Model extends DB
 
     }
 
-    public function getList($condition, $field = '*', $relate = [], $sort = '', $limit = '', $group = '', $having = '')
+    public function getList($condition= [], $field = '*', $relate = [], $sort = '', $limit = '', $group = '', $having = '')
     {
 
         $query = $this->field($field)->where($condition);
@@ -66,7 +66,7 @@ class Model extends DB
 
     }
 
-    public function getListForPage($condition, $field = '*', $relate = [], $sort = '', $page = null, $pageSize = null, $group = '', $having = '')
+    public function getListForPage($condition = [], $field = '*', $relate = [], $sort = '', $page = null, $pageSize = null, $group = '', $having = '')
     {
 
         $query = $this->field($field)->where($condition);

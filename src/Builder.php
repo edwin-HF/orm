@@ -48,6 +48,9 @@ abstract class Builder implements IQuery
     public function where($conditions, $op = 'AND')
     {
 
+        if (empty($conditions))
+            return $this;
+
         $cond = '';
         if (!$this->_condition){
             $cond = ' WHERE ( ';
