@@ -14,7 +14,7 @@ class Model extends DB
     public function config(){
 
         if (method_exists(null, 'config')){
-            return \config('database');
+            return \config('database',[]);
         }
 
         return [];

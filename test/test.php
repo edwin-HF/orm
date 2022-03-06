@@ -22,12 +22,12 @@ $relate = [
 
 
 
-$res = \test\Users::query()->table('admin_users')
-    ->fetchSql(false)->getInfo(
-    [
-        ['id','=', 1]
-    ]
-);
+$res = \test\Users::query()
+    ->getInfo(
+        [
+            ['id','=', 1]
+        ]
+    );
 
 var_dump($res);
 
