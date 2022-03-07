@@ -65,6 +65,10 @@ class Parser
             }
         }
 
+        $fields = array_map(function ($val){
+            return sprintf('`%s`',$val);
+        },$fields);
+
         $sql = sprintf('INSERT INTO `%s` ( ' . implode(',',$fields) . ' ) VALUES ', $table);
 
         $vDataArr = [];
