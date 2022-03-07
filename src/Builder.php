@@ -150,7 +150,9 @@ abstract class Builder implements IQuery
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $client = $this->getConnection();
+
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -158,7 +160,9 @@ abstract class Builder implements IQuery
             }
         }
 
-        return $stmt->execute();
+        $stmt->execute();
+
+        return $client->lastInsertId();
 
     }
 
