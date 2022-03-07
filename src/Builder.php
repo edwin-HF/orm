@@ -106,13 +106,15 @@ abstract class Builder implements IQuery
     public function select()
     {
 
+        $client = $this->getConnection();
+
         $sql = Parser::select($this->getTableName(), $this->_alias, $this->_field, $this->_condition, $this->_offset, $this->_limit, $this->_orderBy, $this->_group, $this->_having, $this->_relate);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -128,13 +130,16 @@ abstract class Builder implements IQuery
 
     public function get()
     {
+
+        $client = $this->getConnection();
+
         $sql = Parser::select($this->getTableName(), $this->_alias, $this->_field, $this->_condition, false, false, $this->_orderBy, $this->_group, $this->_having, $this->_relate);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -150,13 +155,13 @@ abstract class Builder implements IQuery
     public function insert($data)
     {
 
+        $client = $this->getConnection();
+
         $sql = Parser::insert($this->getTableName(),$data);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
-
-        $client = $this->getConnection();
 
         $stmt = $client->prepare($sql);
 
@@ -174,13 +179,16 @@ abstract class Builder implements IQuery
 
     public function update($data)
     {
+
+        $client = $this->getConnection();
+
         $sql = Parser::update($this->getTableName(),$this->_condition, $data);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -193,13 +201,16 @@ abstract class Builder implements IQuery
 
     public function delete()
     {
+
+        $client = $this->getConnection();
+
         $sql = Parser::delete($this->getTableName(), $this->_condition);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -212,13 +223,16 @@ abstract class Builder implements IQuery
 
     public function count()
     {
+
+        $client = $this->getConnection();
+
         $sql = Parser::select($this->getTableName(), $this->_alias, 'count(1) as total_count', $this->_condition, false, false, false, $this->_group, $this->_having, $this->_relate);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -235,13 +249,16 @@ abstract class Builder implements IQuery
 
     public function max($field)
     {
+
+        $client = $this->getConnection();
+
         $sql = Parser::select($this->getTableName(), $this->_alias, sprintf('max(`%s`) as tp_v',$field), $this->_condition, false, false, false, $this->_group, $this->_having, $this->_relate);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -259,13 +276,16 @@ abstract class Builder implements IQuery
 
     public function min($field)
     {
+
+        $client = $this->getConnection();
+
         $sql = Parser::select($this->getTableName(), $this->_alias, sprintf('min(`%s`) as tp_v',$field), $this->_condition, false, false, false, $this->_group, $this->_having, $this->_relate);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
@@ -283,13 +303,16 @@ abstract class Builder implements IQuery
 
     public function value($field)
     {
+
+        $client = $this->getConnection();
+
         $sql = Parser::select($this->getTableName(), $this->_alias, $field, $this->_condition, false, false, $this->_orderBy, $this->_group, $this->_having, $this->_relate);
 
         if ($this->_fetchSql){
             return [$sql, $this->_bindParams];
         }
 
-        $stmt = $this->getConnection()->prepare($sql);
+        $stmt = $client->prepare($sql);
 
         if (!empty($this->_bindParams)){
             foreach ($this->_bindParams as $key => $val){
