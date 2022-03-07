@@ -19,6 +19,7 @@ abstract class Builder implements IQuery
     private $_orderBy = false;
     private $_relate  = false;
     private $_fetchSql= false;
+    private $_prefix  = '';
 
     public function relate($relate)
     {
@@ -33,7 +34,7 @@ abstract class Builder implements IQuery
         }elseif (!empty($this->tableName)){
             $this->_table = $this->tableName;
         }else{
-            $this->_table = Helper::unCamelize(basename(str_replace('\\', '/', static::class)));
+            $this->_table = $this->_prefix . Helper::unCamelize(basename(str_replace('\\', '/', static::class)));
         }
 
         return $this;
@@ -83,6 +84,11 @@ abstract class Builder implements IQuery
     public function orderBy($order)
     {
         $this->_orderBy = $order;
+        return $this;
+    }
+
+    public function prefix($prefix){
+        $this->_prefix = $prefix;
         return $this;
     }
 

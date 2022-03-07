@@ -59,6 +59,10 @@ class DB extends Builder
             $this->curConn = self::$connMap[$dsn];
         }
 
+        if (isset($connection['prefix']) && !empty($connection['prefix'])){
+            $this->prefix($connection['prefix']);
+        }
+
         $this->curConn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         return $this->curConn;
