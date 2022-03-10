@@ -50,7 +50,7 @@ class Parser
             $fields  = array_keys($data);
 
             $values[] = array_map(function ($item){
-                return sprintf('"%s"',addslashes($item));
+                return sprintf('"%s"', addslashes($item));
             },$data);
 
         } else {
@@ -60,7 +60,7 @@ class Parser
                 }
 
                 $values[] = array_map(function ($val){
-                    return sprintf('"%s"',addslashes($val));
+                    return sprintf('"%s"', addslashes($val));
                 },$item);
             }
         }
