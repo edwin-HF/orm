@@ -68,9 +68,23 @@ abstract class Builder implements IQuery
                 }else{
                     $leftP = $rightP = '';
                 }
-                $bindField = str_replace('.','_',$condition[0]);
-                $cond .= sprintf('%s `%s` %s %s :%s %s ',($index++ == 0 ? '' : $condition[3] ?? ' AND '), $condition[0], $condition[1], $leftP, $bindField, $rightP);
-                $this->_bindParams[':'. $bindField] = (is_array($condition[2]) ? implode(',', $condition[2]) : $condition[2]);
+
+                $bindFieldArr = [];
+                if (is_array($condition[2])){
+                    foreach ($condition[2] as $key => $item){
+                        $tpBindField = ':' . str_replace('.','_',$condition[0].'_'.$key);
+                        $this->_bindParams[$tpBindField] = $item;
+                        $bindFieldArr[] = $tpBindField;
+                    }
+                    $bindField = implode(',',$bindFieldArr);
+
+                }else{
+                    $bindField = ':' . str_replace('.','_',$condition[0]);
+                    $this->_bindParams[$bindField] = $condition[2];
+                }
+
+                $cond .= sprintf('%s `%s` %s %s %s %s ',($index++ == 0 ? '' : $condition[3] ?? ' AND '), $condition[0], $condition[1], $leftP, $bindField, $rightP);
+
             }
         }
 
