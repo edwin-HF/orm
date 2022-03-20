@@ -83,7 +83,7 @@ abstract class Builder implements IQuery
                     $this->_bindParams[$bindField] = $condition[2];
                 }
 
-                $cond .= sprintf('%s `%s` %s %s %s %s ',($index++ == 0 ? '' : $condition[3] ?? ' AND '), $condition[0], $condition[1], $leftP, $bindField, $rightP);
+                $cond .= sprintf('%s %s %s %s %s %s ',($index++ == 0 ? '' : $condition[3] ?? ' AND '), $condition[0], $condition[1], $leftP, $bindField, $rightP);
 
             }
         }
