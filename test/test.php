@@ -7,22 +7,27 @@ $relate = [
     ['course as on cc.uid = bb.id','left']
 ];
 
-//$res = test\Users::query()->alias('u')->field('u.*')
-//    ->relate(
-//        [
-//            ['course c','u.id = c.user_id']
-//        ]
-//    )
-//    ->where(
+$res = test\Users::query()->fetchSql(false)->alias('u')->field('u.*')
+    ->relate(
+        [
+            ['course c','u.id = c.user_id']
+        ]
+    )
+    ->where(
+    [
+        ['u.id','=','1'],
+        ['u.name','like','%lisi%','OR'],
+    ]
+)->orderBy('id')->get();
+
+
+
+
+//$res = \test\Users::query()->fetchSql(false)->insert(
 //    [
-//        ['u.id','=','1'],
-//        ['u.name','like','%lisi%','OR'],
+//        'name' => '*8.?"'
 //    ]
-//)->orderBy('id')->get();
-
-
-
-$res = \test\Users::query()->count();
+//);
 
 var_dump($res);
 
